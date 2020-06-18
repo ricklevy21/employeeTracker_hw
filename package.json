@@ -1,0 +1,24 @@
+{
+  "name": "employeeTracker_hw",
+  "version": "1.0.0",
+  "description": "a solution for managing a company's employees using node, inquirer, and MySQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricklevy21/employeeTracker_hw.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ricklevy21/employeeTracker_hw/issues"
+  },
+  "homepage": "https://github.com/ricklevy21/employeeTracker_hw#readme",
+  "dependencies": {
+    "inquirer": "^7.2.0",
+    "mysql": "^2.18.1"
+  }
+}
