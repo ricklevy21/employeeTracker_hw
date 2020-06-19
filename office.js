@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------------------
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-car cTable = require("console.table");
+var cTable = require("console.table");
 
 //--------------------------------------------------------------------------------
 //DATABASE CONNECTION
@@ -37,7 +37,7 @@ var employeeTracker = function(){
                 "Add records to database",
                 "View records in database",
                 "Update records in database",
-                "Delete records in database"
+                "Delete records in database",
                 "EXIT"
             ]
         })
@@ -82,15 +82,15 @@ var addRecords = function(){
     .then(function(answer){
         switch(answer.add){
             case "Department":
-                //exectute query
+                addDepartment();
                 break;
                 
             case "Role":
-                //exectute query
+                addWhat();
                 break;
             
             case "Employee":
-                //exectute query
+                addWhat();
                 break;
                     
                     
@@ -187,6 +187,25 @@ var deleteRecords = function(){
                 break;
         }
     })
+};
+
+//function for user to add department
+var addDepartment = function(){
+    inquirer
+        .prompt({
+            name: "addDept",
+            type: "input",
+            message: "Enter the name of the new department you would like to add to the database:"
+        })
+        .then(function(answer){
+            var query = "INSERT INTO department (name) VALUES (?)";
+            var params = [answer.addDept];
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`A new department called ${answer.addDept} has been added to the database`);
+                employeeTracker();
+            })
+        })
 };
 
 
