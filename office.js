@@ -1,8 +1,13 @@
+//--------------------------------------------------------------------------------
 //DEPENDENCIES
+//--------------------------------------------------------------------------------
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+car cTable = require("console.table");
 
+//--------------------------------------------------------------------------------
 //DATABASE CONNECTION
+//--------------------------------------------------------------------------------
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -18,18 +23,21 @@ connection.connect(function(err){
     employeeTracker();
 });
 
+//--------------------------------------------------------------------------------
 //FUNCTIONS
-
+//--------------------------------------------------------------------------------
+//function to start the CLI applicaiton
 var employeeTracker = function(){
     inquirer
         .prompt({
             name: "start",
             type: "list",
-            message: "Greetings. What would you like to do?",
+            message: "Greetings. What would you like to do? Press CTRL+C to Exit Application Anytime",
             choices: [
                 "Add records to database",
                 "View records in database",
                 "Update records in database",
+                "Delete records in database"
                 "EXIT"
             ]
         })
@@ -47,6 +55,10 @@ var employeeTracker = function(){
                     updateRecords();
                     break;
 
+                case "Delete records in database":
+                    deleteRecords();
+                    break;
+
                 case "EXIT":
                     connection.end();
                     console.log("Thank you, goodbye.")
@@ -54,17 +66,127 @@ var employeeTracker = function(){
         })
 };
 
-
+//function to add records
 var addRecords = function(){
-    console.log("add records")
+    //console.log("add records")
+    inquirer    .prompt({
+        name: "add",
+        type: "list",
+        message: "What would you like to add?",
+        choices: [
+            "Department",
+            "Role",
+            "Employee"
+        ]
+    })
+    .then(function(answer){
+        switch(answer.add){
+            case "Department":
+                //exectute query
+                break;
+                
+            case "Role":
+                //exectute query
+                break;
+            
+            case "Employee":
+                //exectute query
+                break;
+                    
+                    
+        }
+    })
 };
 
+//function to view records
 var viewRecords = function(){
-    console.log("viewRecords")
+    //console.log("viewRecords")
+    inquirer    .prompt({
+        name: "view",
+        type: "list",
+        message: "What would you like to view?",
+        choices: [
+            "All Department",
+            "All Roles",
+            "All Employees",
+            "Department Budgets"
+        ]
+    })
+    .then(function(answer){
+        switch(answer.add){
+            case "All Department":
+                //exectute query
+                break;
+
+            case "All Roles":
+                //exectute query
+                break;
+
+            case "All Employees":
+                //exectute query
+                break;
+
+            case "Department Budgets":
+                //exectute query
+                break;
+        }
+    })
 };
 
+
+//function to update records
 var updateRecords = function(){
-    console.log("update records")
+    //console.log("update records")
+    inquirer    .prompt({
+        name: "update",
+        type: "list",
+        message: "What would you like to update?",
+        choices: [
+            "Employee Role",
+            "Employee Manager"
+        ]
+    })
+    .then(function(answer){
+        switch(answer.add){
+            case "Employee Role":
+                //exectute query
+                break;
+
+            case "Employee Manager":
+                //exectute query
+                break;
+        }
+    })
+};
+
+//function to delete records
+var deleteRecords = function(){
+    //console.log("update records")
+    inquirer    .prompt({
+        name: "update",
+        type: "list",
+        message: "What would you like to delete?",
+        choices: [
+            "Department",
+            "Role",
+            "Employee"
+        ]
+    })
+    .then(function(answer){
+        switch(answer.add){
+            case "Department":
+                //exectute query
+                break;
+
+            case "Role":
+                //exectute query
+                break;
+
+            case "Employee":
+                //exectute query
+                break;
+        }
+    })
 };
 
 
