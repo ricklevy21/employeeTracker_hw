@@ -5,8 +5,6 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
 var util = require("util");
-const { stringify } = require("querystring");
-
 //--------------------------------------------------------------------------------
 //DATABASE CONNECTION
 //--------------------------------------------------------------------------------
@@ -125,19 +123,19 @@ var viewRecords = function(){
     .then(function(answer){
         switch(answer.add){
             case "All Departments":
-                //exectute query
+                viewDepartments();
                 break;
 
             case "All Roles":
-                //exectute query
+                viewRoles();
                 break;
 
             case "All Employees":
-                //exectute query
+                viewEmployees();
                 break;
 
             case "Department Budgets":
-                //exectute query
+                viewBudgets();
                 break;
         }
     })
@@ -302,5 +300,39 @@ function addEmployee(){
                 employeeTracker();
             })
         })
+
+};
+
+
+//function to view all departments
+var viewDepartments = function() {
+    var query = "SELECT * FROM department";
+    connection.query(query, function(err, res){
+        if (err) throw err;
+    })
+    console.log(res);
+    employeeTracker()
+}
+
+//function to view all roles
+var viewRoles = function(){
+    var query = "SELECT * FROM role";
+    connection.query(query, function(err, res){
+        if (err) throw err;
+    })
+    console.table(res);
+    employeeTracker()
+}
+//function to view all employees
+var viewEmployees = function(){
+    var query = "SELECT * FROM employee";
+    connection.query(query, function(err, res){
+        if (err) throw err;
+    })
+    console.table(res);
+    employeeTracker()
+}
+//function to view a department's budget
+var viewBudgets = function(){
 
 };
