@@ -4,6 +4,8 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
+var util = require("util");
+const { stringify } = require("querystring");
 
 //--------------------------------------------------------------------------------
 //DATABASE CONNECTION
@@ -21,7 +23,15 @@ connection.connect(function(err){
     console.log("The connection to the database was made sucessfully");
     //function to start CLI application
     employeeTracker();
+
 });
+//--------------------------------------------------------------------------------
+//GLOBAL VARAIBLES
+const departments = ["admin","sales","accounting","customer relations","human resources","corporate"];
+const roles = ["Regional Manager", "Receptonist","Assistant to the Regional Manager","Sales Associate","Customer Service Reprensentative","Quality Assurance","Accountant","HR Representative","Vice President"]
+const employees = ["Michael","Pam","Dwight","Jim","Jan"]
+//--------------------------------------------------------------------------------
+
 
 //--------------------------------------------------------------------------------
 //FUNCTIONS
@@ -86,11 +96,11 @@ var addRecords = function(){
                 break;
                 
             case "Role":
-                addWhat();
+               addRole();
                 break;
             
             case "Employee":
-                addWhat();
+                addEmployee();
                 break;
                     
                     
@@ -106,7 +116,7 @@ var viewRecords = function(){
         type: "list",
         message: "What would you like to view?",
         choices: [
-            "All Department",
+            "All Departments",
             "All Roles",
             "All Employees",
             "Department Budgets"
@@ -114,7 +124,7 @@ var viewRecords = function(){
     })
     .then(function(answer){
         switch(answer.add){
-            case "All Department":
+            case "All Departments":
                 //exectute query
                 break;
 
@@ -210,7 +220,87 @@ var addDepartment = function(){
 
 
 
+//function to create departments array from db--------------------------NOT WORKING
+var getDepts = function(){
+    var deptQuery = "SELECT name FROM department";
+    connection.query(deptQuery, function(err, res){
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++){
+            departments.push(res[i].name)
+        }
+    })
+    connection.end()
+}
 
+//function for user to add role
+function addRole(){
+    inquirer
+        .prompt([
+            {
+                name: "addRoleTitle",
+                type: "input",
+                message: "Enter the title of the new role you would like to add to the database:"
+            },
+            {
+                name: "addRoleSalary",
+                type: "input",
+                message: "Enter the salary for the new role:"
+            },
+            {
+                name: "addRoleDept",
+                type: "list",
+                message: "Select the department for which this role belongs",
+                choices: departments
+            }]
+        )
+        .then(function(answer){
+            var query = "INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE name = ?))";
+            var params = [answer.addRoleTitle, answer.addRoleSalary, answer.addRoleDept];
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`A new role with the title ${answer.addRoleTitle} has been added to the ${answer.addRoleDept} department with a salary of ${answer.addRoleSalary}`);
+                employeeTracker();
+            })
+        })
 
+};
 
+//function to add employee
+function addEmployee(){
+    inquirer
+        .prompt([
+            {
+                name: "addEmpFirstName",
+                type: "input",
+                message: "Enter the first name of the new employee:"
+            },
+            {
+                name: "addEmpLastName",
+                type: "input",
+                message: "Enter the last name of the new employee:"
+            },
+            {
+                name: "addEmpRole",
+                type: "list",
+                message: "Select the role for which this employee was hired",
+                choices: roles
+            },
+            {
+                name: "addEmpManager",
+                type: "list",
+                message: "Who will be the employee's manager?",
+                choices: employees
+            }
+    ]
+        )
+        .then(function(answer){
+            var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee AS e WHERE e.first_name = ?))";
+            var params = [answer.addEmpFirstName, answer.addEmpLastName, answer.addEmpRole, answer.addEmpManager];
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`A new employee named ${answer.addEmpFirstName} ${answer.addEmpLastName} with the role ${answer.addEmpRole} has been added to the database. ${answer.addEmpManager} will be their manager`);
+                employeeTracker();
+            })
+        })
 
+};
