@@ -383,3 +383,28 @@ var updateEmpRole = function(){
 }
 
 //function to update employee's manager
+var updateEmpManager = function(){
+    inquirer
+        .prompt([
+            {
+                name: "updateEmp",
+                type: "list",
+                message: "Which employee would you like to update?",
+                choices: employees
+            },
+            {
+                name: "updateManager",
+                type: "list",
+                message: "Who is the employee's new manager?",
+                choices: employees
+            }
+    ]).then(function(answer){
+        var query = "UPDATE employee AS e SET e.manager_id = (SELECT * FROM(SELECT em.id FROM employee AS em WHERE em.first_name = ?)tblTmp) WHERE e.first_name = ?";
+            var params = [answer.updateManager, answer.updateEmp]
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`${answer.updateEmp}'s manager has been updated to ${answer.updateManager}.`)
+                employeeTracker();
+            })
+        })
+}
