@@ -13,7 +13,8 @@ var connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "hunter21",
-    database: "office"
+    database: "office",
+    multipleStatements: true
 });
 
 connection.connect(function(err){
@@ -172,7 +173,7 @@ var updateRecords = function(){
 var deleteRecords = function(){
     //console.log("update records")
     inquirer    .prompt({
-        name: "update",
+        name: "delete",
         type: "list",
         message: "What would you like to delete?",
         choices: [
@@ -182,17 +183,17 @@ var deleteRecords = function(){
         ]
     })
     .then(function(answer){
-        switch(answer.add){
+        switch(answer.delete){
             case "Department":
-                //exectute query
+                deleteDepartment();
                 break;
 
             case "Role":
-                //exectute query
+                deleteRole();
                 break;
 
             case "Employee":
-                //exectute query
+                deleteEmployee();
                 break;
         }
     })
@@ -404,6 +405,48 @@ var updateEmpManager = function(){
             connection.query(query, params, function(err, res){
                 if (err) throw err;
                 console.log(`${answer.updateEmp}'s manager has been updated to ${answer.updateManager}.`)
+                employeeTracker();
+            })
+        })
+}
+
+//--------------------------------------------------------------------------------
+//FUNCTIONS TO DELETE DATA
+//--------------------------------------------------------------------------------
+
+//function to delete a department
+var deleteDepartment = function(){
+    inquirer
+        .prompt({
+            name: "deleteDepartment",
+            type: "list",
+            message: "Which department would you like to delete?",
+            choices: departments
+        }).then(function(answer){
+            var query = "SET FOREIGN_KEY_CHECKS=0; UPDATE role AS r SET r.department_id = NULL WHERE r.department_id = (SELECT d.id FROM department AS d WHERE d.name = ?); DELETE FROM department WHERE name LIKE ?; SET FOREIGN_KEY_CHECKS=1;"
+            var params = [answer.deleteDepartment, answer.deleteDepartment];
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`The ${answer.deleteDepartment} Department has been deleted from the database.`)
+                employeeTracker();
+            })
+        })
+}
+
+//function to delete a role
+var deleteRole = function(){
+    inquirer
+        .prompt({
+            name: "deleteRole",
+            type: "list",
+            message: "Which department would you like to delete?",
+            choices: roles
+        }).then(function(answer){
+            var query = "SET FOREIGN_KEY_CHECKS=0; UPDATE employee AS e SET e.role_id = NULL WHERE e.role_id = (SELECT r.id FROM role AS r WHERE r.title = ?); DELETE FROM role WHERE title LIKE ?; SET FOREIGN_KEY_CHECKS=1;"
+            var params = [answer.deleteRole, answer.deleteRole];
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`The ${answer.deleteRole} Role has been deleted from the database.`)
                 employeeTracker();
             })
         })
