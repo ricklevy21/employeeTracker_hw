@@ -145,7 +145,8 @@ var viewRecords = function(){
 //function to update records
 var updateRecords = function(){
     //console.log("update records")
-    inquirer    .prompt({
+    inquirer    
+    .prompt({
         name: "update",
         type: "list",
         message: "What would you like to update?",
@@ -157,11 +158,11 @@ var updateRecords = function(){
     .then(function(answer){
         switch(answer.update){
             case "Employee Role":
-                //exectute query
+                updateEmpRole();
                 break;
 
             case "Employee Manager":
-                //exectute query
+               updateEmpManager();
                 break;
         }
     })
@@ -198,7 +199,7 @@ var deleteRecords = function(){
 };
 
 //--------------------------------------------------------------------------------
-//FUNCTIONS TO ADD TO DB
+//FUNCTIONS TO ADD DATA
 //--------------------------------------------------------------------------------
 
 //function for user to add department
@@ -343,10 +344,42 @@ var viewEmployees = function(){
         employeeTracker();
     })
 }
+
 //function to view a department's budget
 // var viewBudgets = function(){
 //     vary query = " "
 // };
 
 
-//function to 
+//--------------------------------------------------------------------------------
+//FUNCTIONS TO UPDATE DATA
+//--------------------------------------------------------------------------------
+
+//function to update an employee's role
+var updateEmpRole = function(){
+    inquirer
+        .prompt([
+            {
+                name: "updateEmp",
+                type: "list",
+                message: "Which employee would you like to update?",
+                choices: employees
+            },
+            {
+                name: "updateRole",
+                type: "list",
+                message: "What is the employee's new role?",
+                choices: roles
+            }
+    ]).then(function(answer){
+            var query = "UPDATE employee AS e SET e.role_id = (SELECT id FROM role WHERE title = ?) WHERE e.id = (SELECT * FROM(SELECT em.id FROM employee AS em WHERE em.first_name = ?)tblTmp);"
+            var params = [answer.updateRole, answer.updateEmp]
+            connection.query(query, params, function(err, res){
+                if (err) throw err;
+                console.log(`${answer.updateEmp}'s role has been updated to ${answer.updateRole}.`)
+                employeeTracker();
+            })
+        })
+}
+
+//function to update employee's manager
