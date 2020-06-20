@@ -121,7 +121,7 @@ var viewRecords = function(){
         ]
     })
     .then(function(answer){
-        switch(answer.add){
+        switch(answer.view){
             case "All Departments":
                 viewDepartments();
                 break;
@@ -155,7 +155,7 @@ var updateRecords = function(){
         ]
     })
     .then(function(answer){
-        switch(answer.add){
+        switch(answer.update){
             case "Employee Role":
                 //exectute query
                 break;
@@ -196,6 +196,10 @@ var deleteRecords = function(){
         }
     })
 };
+
+//--------------------------------------------------------------------------------
+//FUNCTIONS TO ADD TO DB
+//--------------------------------------------------------------------------------
 
 //function for user to add department
 var addDepartment = function(){
@@ -304,35 +308,45 @@ function addEmployee(){
 };
 
 
+//--------------------------------------------------------------------------------
+//FUNCTIONS TO VIEW DATA
+//--------------------------------------------------------------------------------
+
 //function to view all departments
 var viewDepartments = function() {
-    var query = "SELECT * FROM department";
+    var query = "SELECT id AS 'Department ID', name AS 'Department' FROM department";
     connection.query(query, function(err, res){
         if (err) throw err;
-    })
-    console.log(res);
-    employeeTracker()
+        console.log('\n')
+        console.table(res);
+        employeeTracker();
+    });
 }
 
 //function to view all roles
 var viewRoles = function(){
-    var query = "SELECT * FROM role";
+    var query = "SELECT r.id AS 'Role ID', r.title AS 'Role', r.salary AS 'Starting Salary', d.name AS 'Department' FROM role AS r LEFT JOIN department AS d ON r.department_id = d.id";
     connection.query(query, function(err, res){
         if (err) throw err;
+        console.log('\n')
+        console.table(res);
+        employeeTracker()
     })
-    console.table(res);
-    employeeTracker()
 }
 //function to view all employees
 var viewEmployees = function(){
-    var query = "SELECT * FROM employee";
+    var query = "SELECT e.id AS 'Employee ID', CONCAT(e.first_name,' ', e.last_name) AS 'Employee Name', r.title AS 'Title', r.salary AS 'Salary', d.name AS 'Department', rman.title AS 'Reports To' FROM employee AS e LEFT JOIN role AS r ON e.role_id = r.id LEFT JOIN department AS d ON r.department_id = d.id LEFT JOIN role AS rman ON e.manager_id = rman.id";
     connection.query(query, function(err, res){
         if (err) throw err;
+        console.log('\n')
+        console.table(res);
+        employeeTracker();
     })
-    console.table(res);
-    employeeTracker()
 }
 //function to view a department's budget
-var viewBudgets = function(){
+// var viewBudgets = function(){
+//     vary query = " "
+// };
 
-};
+
+//function to 
