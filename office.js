@@ -24,12 +24,6 @@ connection.connect(function(err){
     employeeTracker();
 
 });
-//--------------------------------------------------------------------------------
-//GLOBAL VARAIBLES
-const departments = ["admin","sales","accounting","customer relations","human resources","corporate"];
-const roles = ["Regional Manager", "Receptonist","Assistant to the Regional Manager","Sales Associate","Customer Service Reprensentative","Quality Assurance","Accountant","HR Representative","Vice President"]
-const employees = ["Michael","Pam","Dwight","Jim","Jan"]
-//--------------------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------------------
@@ -224,20 +218,21 @@ var addDepartment = function(){
 
 
 
-//function to create departments array from db--------------------------NOT WORKING
-var getDepts = function(){
-    var deptQuery = "SELECT name FROM department";
-    connection.query(deptQuery, function(err, res){
+//function for user to add role
+function addRole(){
+    const departments = [];
+    //function to load departments from db
+var loadDepartments = function(){
+    var query = "SELECT name FROM department";
+    connection.query(query, function(err, res){
         if (err) throw err;
-        for (var i = 0; i < res.length; i++){
+        for(var i = 0; i < res.length; i++){
             departments.push(res[i].name)
         }
     })
-    connection.end()
-}
 
-//function for user to add role
-function addRole(){
+}
+    loadDepartments();
     inquirer
         .prompt([
             {
@@ -271,6 +266,30 @@ function addRole(){
 
 //function to add employee
 function addEmployee(){
+    var employees = []
+    var roles = [];
+    //function to load roles from db
+    var loadRoles = function(){
+        var query = "SELECT title FROM role;";
+        connection.query(query, function(err, res){
+            if (err) throw err;
+            for(var i = 0; i < res.length; i++){
+                roles.push(res[i].title)
+            }
+        })
+    }
+    //function to load employees from db
+    var loadEmployees = function(){
+        var query = "SELECT first_name FROM employee;";
+        connection.query(query, function(err, res){
+            if (err) throw err;
+            for(var i = 0; i < res.length; i++){
+                employees.push(res[i].first_name)
+            }
+        })
+    }
+    loadRoles();
+    loadEmployees();
     inquirer
         .prompt([
             {
@@ -346,18 +365,38 @@ var viewEmployees = function(){
     })
 }
 
-//function to view a department's budget
-// var viewBudgets = function(){
-//     vary query = " "
-// };
-
 
 //--------------------------------------------------------------------------------
 //FUNCTIONS TO UPDATE DATA
 //--------------------------------------------------------------------------------
 
-//function to update an employee's role
-var updateEmpRole = function(){
+//function to update an employee's role----------------Not functioning. Cannot figure out why arrays wont populate, as this exact function works fine in another location
+function updateEmpRole(){
+
+    var employees = ["Michael","Pam","Dwight","Jim","Jan"];
+    var roles = ["Regional Manager","Receptonist","Assistant to the Regional Manager","Sales Associate","Customer Service Reprensentative","Quality Assurance","Accountant","HR Representative","Vice President"];
+    // //function to load roles from db
+    // function loadRoles(){
+    //     var query = "SELECT title FROM role;";
+    //     connection.query(query, function(err, res){
+    //         if (err) throw err;
+    //         for(var i = 0; i < res.length; i++){
+    //             roles.push(res[i].title)
+    //         }
+    //     })
+    // }
+    // //function to load employees from db
+    // function loadEmployees(){
+    //     var query = "SELECT first_name FROM employee;";
+    //     connection.query(query, function(err, res){
+    //         if (err) throw err;
+    //         for(var i = 0; i < res.length; i++){
+    //             employees.push(res[i].first_name)
+    //         }
+    //     })
+    // }
+    // loadRoles();
+    // loadEmployees();
     inquirer
         .prompt([
             {
@@ -385,6 +424,18 @@ var updateEmpRole = function(){
 
 //function to update employee's manager
 var updateEmpManager = function(){
+    var employees = ["Michael","Pam","Dwight","Jim","Jan"];
+    // //function to load employees from db
+    // var loadEmployees = function(){
+    //     var query = "SELECT first_name FROM employee;";
+    //     connection.query(query, function(err, res){
+    //         if (err) throw err;
+    //         for(var i = 0; i < res.length; i++){
+    //             employees.push(res[i].first_name)
+    //         }
+    //     })
+    // }
+    // loadEmployees();
     inquirer
         .prompt([
             {
@@ -416,6 +467,20 @@ var updateEmpManager = function(){
 
 //function to delete a department
 var deleteDepartment = function(){
+    const departments = ["admin","sales","accounting","customer relations","human resources","corporate"];
+//     //function to load departments from db
+// var loadDepartments = function(){
+//     var query = "SELECT name FROM department";
+//     connection.query(query, function(err, res){
+//         if (err) throw err;
+//         for(var i = 0; i < res.length; i++){
+//             departments.push(res[i].name)
+//         }
+//     })
+
+// }
+//     loadDepartments();
+
     inquirer
         .prompt({
             name: "deleteDepartment",
@@ -435,11 +500,24 @@ var deleteDepartment = function(){
 
 //function to delete a role
 var deleteRole = function(){
+
+    var roles = ["Regional Manager","Receptonist","Assistant to the Regional Manager","Sales Associate","Customer Service Reprensentative","Quality Assurance","Accountant","HR Representative","Vice President"];
+    // //function to load roles from db
+    // function loadRoles(){
+    //     var query = "SELECT title FROM role;";
+    //     connection.query(query, function(err, res){
+    //         if (err) throw err;
+    //         for(var i = 0; i < res.length; i++){
+    //             roles.push(res[i].title)
+    //         }
+    //     })
+    // }
+    // loadRoles();
     inquirer
         .prompt({
             name: "deleteRole",
             type: "list",
-            message: "Which department would you like to delete?",
+            message: "Which role would you like to delete?",
             choices: roles
         }).then(function(answer){
             var query = "SET FOREIGN_KEY_CHECKS=0; UPDATE employee AS e SET e.role_id = NULL WHERE e.role_id = (SELECT r.id FROM role AS r WHERE r.title = ?); DELETE FROM role WHERE title LIKE ?; SET FOREIGN_KEY_CHECKS=1;"
